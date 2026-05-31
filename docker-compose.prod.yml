@@ -1,0 +1,24 @@
+services:
+  backend:
+    image: ghcr.io/crazy-valter/bitcoin-arbitrage-backend:latest
+    build:
+      target: prod
+    ports:
+      - "127.0.0.1:8000:8000"  # solo accesible desde localhost — Nginx del host hace el proxy
+    restart: unless-stopped
+
+  frontend:
+    image: ghcr.io/crazy-valter/bitcoin-arbitrage-frontend:latest
+    build:
+      target: prod
+    ports:
+      - "127.0.0.1:3000:80"   # Nginx del host redirige tráfico externo aquí
+    restart: unless-stopped
+
+  db:
+    restart: unless-stopped
+    # sin ports — no expuesto fuera de la red Docker
+
+  cache:
+    restart: unless-stopped
+    # sin ports — no expuesto fuera de la red Docker

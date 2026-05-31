@@ -1,0 +1,16 @@
+fastapi
+uvicorn[standard]
+sse-starlette
+redis[hiredis]
+pydantic-settings
+pydantic[email]
+structlog
+asyncpg
+sqlalchemy[asyncio]
+alembic
+python-jose[cryptography]
+argon2-cffi
+slowapi
+ccxt[async]
+pytest
+pytest-asyncio

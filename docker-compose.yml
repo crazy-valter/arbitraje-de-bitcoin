@@ -1,0 +1,66 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    networks: [arbitrage-net]
+    depends_on:
+      db:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health')\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    env_file: .env
+    environment:
+      TZ: America/Mexico_City
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    networks: [arbitrage-net]
+    depends_on:
+      - backend
+    environment:
+      TZ: America/Mexico_City
+
+  db:
+    image: postgres:18.4-alpine3.23
+    volumes:
+      - db-data:/var/lib/postgresql
+    networks: [arbitrage-net]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    env_file: .env
+    environment:
+      TZ: America/Mexico_City
+
+  cache:
+    image: redis:8.8.0-alpine3.23
+    volumes:
+      - cache-data:/data
+    networks: [arbitrage-net]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    command: redis-server --appendonly yes
+    environment:
+      TZ: America/Mexico_City
+
+networks:
+  arbitrage-net:
+    driver: bridge
+
+volumes:
+  db-data:
+  cache-data:

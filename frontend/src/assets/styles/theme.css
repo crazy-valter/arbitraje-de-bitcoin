@@ -1,0 +1,31 @@
+/* Design tokens del sistema de arbitraje — fuente de verdad de la paleta */
+:root {
+  /* Fondos */
+  --arb-bg-base:        #0d1117;
+  --arb-bg-surface:     #161b22;
+  --arb-bg-elevated:    #21262d;
+
+  /* Acento primario — verde trading */
+  --arb-accent-primary: #00d4aa;
+  --arb-accent-hover:   #00b894;
+
+  /* Semánticos financieros */
+  --arb-profit:         #00d4aa;
+  --arb-loss:           #ff4757;
+  --arb-neutral:        #a0aec0;
+  --arb-warning:        #ffa502;
+
+  /* Exchanges */
+  --arb-binance:        #f3ba2f;
+  --arb-kraken:         #5741d9;
+  --arb-bybit:          #f7a600;
+
+  /* Tipografía */
+  --arb-text-primary:   #e2e8f0;
+  --arb-text-secondary: #a0aec0;
+  --arb-text-muted:     #718096;
+
+  /* Bordes */
+  --arb-border:         #30363d;
+  --arb-border-focus:   #00d4aa;
+}

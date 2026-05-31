@@ -1,0 +1,19 @@
+/* Estilos globales del sistema de arbitraje */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import './theme.css';
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--arb-bg-base);
+  color: var(--arb-text-primary);
+  margin: 0;
+}
+
+/* Clases utilitarias del tema */
+.arb-mono   { font-family: 'JetBrains Mono', monospace; }
+.arb-profit { color: var(--arb-profit); }
+.arb-loss   { color: var(--arb-loss); }
