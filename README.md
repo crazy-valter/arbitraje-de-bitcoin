@@ -38,24 +38,74 @@ El sistema arranca con **Modo Demo activado** y el **motor en pausa**. Para ver 
 
 ## Quick Start — entorno local
 
-**Prerequisito único:** Docker + Docker Compose v2.
+### Requisitos previos
+
+| Requisito | Versión mínima | Verificar con | Notas |
+|-----------|----------------|---------------|-------|
+| Docker Engine | 24.x | `docker --version` | Único runtime requerido |
+| Docker Compose | v2 (plugin) | `docker compose version` | Se invoca como `docker compose`, no `docker-compose` |
+| Git | 2.x | `git --version` | Para clonar el repositorio |
+| Make | cualquiera | `make --version` | Atajos del `Makefile` (opcional — los comandos `docker compose` equivalentes también funcionan) |
+
+**Puertos que deben estar libres en el host:** `5173` (frontend), `8000` (backend API + SSE), `5432` (PostgreSQL), `6379` (Redis).
+
+No necesitas instalar Python, Node.js, PostgreSQL ni Redis en tu máquina: todo corre dentro de contenedores.
+
+### Instalación paso a paso
+
+**1. Clonar el repositorio**
 
 ```bash
 git clone <repo-url>
 cd bitcoin-arbitrage-bot
+```
 
-# Copiar variables de entorno
+**2. Configurar las variables de entorno**
+
+```bash
 cp .env.example .env
-# Editar .env: ADMIN_EMAIL, ADMIN_PASSWORD, ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET
+```
 
-# Levantar stack completo (backend + frontend + db + cache)
+Edita `.env` y completa, como mínimo, estas variables (sin ellas el backend aborta en el arranque):
+
+| Variable | Descripción |
+|----------|-------------|
+| `ADMIN_EMAIL` | Correo del usuario administrador (login del dashboard) |
+| `ADMIN_PASSWORD` | Contraseña del administrador — se hashea con Argon2id en el primer arranque |
+| `ACCESS_TOKEN_SECRET` | Secreto para firmar el JWT de acceso (genera uno con `openssl rand -hex 32`) |
+| `REFRESH_TOKEN_SECRET` | Secreto para firmar el JWT de refresco (distinto al anterior) |
+
+**3. Levantar el stack completo** (backend + frontend + db + cache)
+
+```bash
 make up
+```
 
-# Aplicar migraciones de DB
+**4. Aplicar las migraciones de la base de datos**
+
+```bash
 make migrate
 ```
 
-Acceder en `http://localhost:5173`.
+**5. Verificar que todo esté arriba**
+
+```bash
+docker compose ps        # los 4 servicios deben estar "running"/"healthy"
+make logs                # tail de logs si algo no arranca
+```
+
+**6. Acceder a la aplicación**
+
+Abre `http://localhost:5173` e inicia sesión con el `ADMIN_EMAIL` / `ADMIN_PASSWORD` que configuraste en `.env`.
+
+> El sistema arranca con **Modo Demo activado** y el **motor en pausa**. Para ver arbitraje en acción: ir a Configuración → presionar _Iniciar a operar_.
+
+### Desinstalar / reiniciar desde cero
+
+```bash
+make down         # detiene los contenedores (conserva los datos)
+make dev-reset    # borra volúmenes y reinicia desde cero (útil para demos)
+```
 
 ### Comandos del día a día
 
@@ -192,6 +242,10 @@ Las estrategias se registran en `StrategyRegistry` y se activan/desactivan desde
 
 ## Dashboard — guía de cada elemento
 
+![Vista Dashboard — KPIs en tiempo real, gráfico de P&L acumulado, Order Book multi-exchange y feed de oportunidades detectadas vía SSE.](docs/images/image1.png)
+
+*Vista Dashboard: monitoreo en tiempo real del motor de arbitraje — cards de P&L, oportunidades y capital, gráfico de P&L acumulado, Order Book de los tres exchanges y feed de oportunidades en vivo.*
+
 ### Cards KPI (fila superior)
 
 #### P&L Acumulado
@@ -281,6 +335,10 @@ Las estrategias se registran en `StrategyRegistry` y se activan/desactivan desde
 
 ## Vista Transacciones — guía de cada campo
 
+![Vista Transacciones — historial completo de oportunidades en PostgreSQL con filtros por estado y exchange, desglose de costos y exportación a CSV.](docs/images/image2.png)
+
+*Vista Transacciones: historial completo persistido en PostgreSQL, con filtros multi-select por estado y exchange, desglose de fees por operación y exportación a CSV.*
+
 ### Alcance de los datos
 
 **Historial completo** — muestra todas las oportunidades registradas en PostgreSQL desde siempre, no solo la sesión actual. Paginación lazy de 50 registros por página (configurable a 25/50/100).
@@ -331,6 +389,10 @@ Exporta la página actual filtrada. Incluye todos los campos numéricos con prec
 ---
 
 ## Vista Configuración — guía completa
+
+![Vista Configuración — controles de Modo Demo, pausa/arranque del motor, parámetros de capital, gestión de wallets y comisiones por exchange.](docs/images/image3.png)
+
+*Vista Configuración: control en caliente del Modo Demo y del motor, ajuste de parámetros de capital y umbral de profit, edición de wallets simulados y comisiones por exchange.*
 
 ### Modo Demo
 
