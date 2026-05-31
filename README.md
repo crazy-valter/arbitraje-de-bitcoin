@@ -7,20 +7,22 @@
 ## Índice
 
 1. [Demo y acceso](#demo-y-acceso)
-2. [Quick Start — entorno local](#quick-start--entorno-local)
-3. [Arquitectura del sistema](#arquitectura-del-sistema)
-4. [Dashboard — guía de cada elemento](#dashboard--guía-de-cada-elemento)
-5. [Vista Transacciones — guía de cada campo](#vista-transacciones--guía-de-cada-campo)
-6. [Vista Configuración — guía completa](#vista-configuración--guía-completa)
-7. [Estrategia de tiempo real: throttling inteligente](#estrategia-de-tiempo-real-throttling-inteligente)
-8. [Precisión financiera: por qué Decimal y no float](#precisión-financiera-por-qué-decimal-y-no-float)
-9. [Extensibilidad: agregar un nuevo exchange](#extensibilidad-agregar-un-nuevo-exchange)
-10. [Seguridad — modelo de defensa en profundidad](#seguridad--modelo-de-defensa-en-profundidad)
-11. [Base de datos](#base-de-datos)
-12. [CI/CD y DevSecOps](#cicd-y-devsecops)
-13. [Infraestructura de producción](#infraestructura-de-producción)
-14. [Observabilidad y logging](#observabilidad-y-logging)
-15. [Roadmap: cómo escalar el sistema](#roadmap-cómo-escalar-el-sistema)
+2. [Inicio rápido](#inicio-rápido)
+3. [Quick Start — entorno local](#quick-start--entorno-local)
+4. [Arquitectura del sistema](#arquitectura-del-sistema)
+5. [Solidez de lógica de negocio](#solidez-de-lógica-de-negocio)
+6. [Dashboard — guía de cada elemento](#dashboard--guía-de-cada-elemento)
+7. [Vista Transacciones — guía de cada campo](#vista-transacciones--guía-de-cada-campo)
+8. [Vista Configuración — guía completa](#vista-configuración--guía-completa)
+9. [Estrategia de tiempo real: throttling inteligente](#estrategia-de-tiempo-real-throttling-inteligente)
+10. [Precisión financiera: por qué Decimal y no float](#precisión-financiera-por-qué-decimal-y-no-float)
+11. [Extensibilidad: agregar un nuevo exchange](#extensibilidad-agregar-un-nuevo-exchange)
+12. [Seguridad — modelo de defensa en profundidad](#seguridad--modelo-de-defensa-en-profundidad)
+13. [Base de datos](#base-de-datos)
+14. [CI/CD y DevSecOps](#cicd-y-devsecops)
+15. [Infraestructura de producción](#infraestructura-de-producción)
+16. [Observabilidad y logging](#observabilidad-y-logging)
+17. [Roadmap: cómo escalar el sistema](#roadmap-cómo-escalar-el-sistema)
 
 ---
 
@@ -28,11 +30,25 @@
 
 | | |
 |---|---|
-| **URL pública** | `https://<dominio>` |
-| **Usuario demo** | Configurado en `.env` (variable `ADMIN_EMAIL`) |
+| **URL pública** | `https://systemlabs.space` |
+| **Email** | `operador@example.com` |
+| **Contraseña** | `OperadorDemo` |
 | **Modo Demo activo** | Activado por defecto — genera spreads sintéticos para validación visual inmediata |
 
 El sistema arranca con **Modo Demo activado** y el **motor en pausa**. Para ver arbitraje en acción: ir a Configuración → presionar _Iniciar a operar_.
+
+---
+
+## Inicio rápido
+
+Para ver el sistema en acción sin instalar nada:
+
+1. Abrir **[https://systemlabs.space](https://systemlabs.space)** en el browser.
+2. Iniciar sesión con `operador@example.com` / `OperadorDemo`.
+3. Ir a **Configuración** → sección _Control del Motor_ → presionar **Iniciar a operar**.
+4. Volver al **Dashboard** — el feed de oportunidades comenzará a llenarse en segundos y el gráfico de P&L acumulado se actualizará con cada trade simulado.
+
+> El sistema arranca en **Modo Demo** (adaptadores sintéticos que generan spreads de $300–$600 USD), garantizando oportunidades visibles independientemente de las condiciones reales de mercado. Para cambiar a datos reales de Binance, Bybit y Kraken, ir a Configuración → desactivar _Modo Demo_.
 
 ---
 
@@ -56,8 +72,8 @@ No necesitas instalar Python, Node.js, PostgreSQL ni Redis en tu máquina: todo 
 **1. Clonar el repositorio**
 
 ```bash
-git clone <repo-url>
-cd bitcoin-arbitrage-bot
+git clone https://github.com/crazy-valter/arbitraje-de-bitcoin
+cd arbitraje-de-bitcoin
 ```
 
 **2. Configurar las variables de entorno**
@@ -137,18 +153,18 @@ make up-prod      # Usa docker-compose.yml + docker-compose.prod.yml
 │                                                                                  │
 │  Nginx (host) ──HTTPS──► Docker Network                                          │
 │                                                                                  │
-│   ┌─────────────────┐     REST/SSE     ┌──────────────────┐                     │
-│   │    frontend      │ ◄─────────────► │     backend      │                     │
-│   │   Vue.js 3       │                 │   FastAPI 0.115  │                     │
-│   │   nginx:80       │                 │   Python 3.13    │                     │
-│   └─────────────────┘                 └────────┬─────────┘                     │
-│                                                │                                │
-│                                   ┌────────────┴────────────┐                   │
-│                                   ▼                         ▼                   │
-│                          ┌─────────────────┐   ┌─────────────────┐              │
-│                          │       db        │   │     cache       │              │
-│                          │  PostgreSQL 18  │   │    Redis 8      │              │
-│                          └─────────────────┘   └─────────────────┘              │
+│   ┌─────────────────┐     REST/SSE    ┌──────────────────┐                       │
+│   │    frontend     │ ◄─────────────► │     backend      │                       │
+│   │   Vue.js 3      │                 │   FastAPI 0.115  │                       │
+│   │   nginx:80      │                 │   Python 3.13    │                       │
+│   └─────────────────┘                 └────────┬─────────┘                       │
+│                                                │                                 │
+│                                   ┌────────────┴────────────┐                    │
+│                                   ▼                         ▼                    │
+│                          ┌─────────────────┐   ┌─────────────────┐               │
+│                          │       db        │   │     cache       │               │
+│                          │  PostgreSQL 18  │   │    Redis 8      │               │
+│                          └─────────────────┘   └─────────────────┘               │
 └──────────────────────────────────────────────────────────────────────────────────┘
                                      │
               ┌──────────────────────┼──────────────────────┐
@@ -237,6 +253,68 @@ ArbitrageStrategyPort (ABC)
 ```
 
 Las estrategias se registran en `StrategyRegistry` y se activan/desactivan desde `system_config` sin reiniciar el servicio. El engine itera sobre las activas en cada tick.
+
+### Scoring de oportunidades
+
+Antes de retornar las oportunidades detectadas, `CrossExchangeStrategy` las ordena por un **score de prioridad** (0.0–1.0) calculado en `core/services/scoring.py`:
+
+| Factor | Peso | Referencia (= 1.0) |
+|--------|------|--------------------|
+| `net_profit_pct` — rentabilidad neta | 50% | 2% de ROI |
+| `max_volume_btc` — liquidez disponible | 30% | 1.0 BTC |
+| `gross_spread_pct` — spread bruto | 20% | 1% de spread |
+
+Cada factor se normaliza a [0.0, 1.0] antes de aplicar el peso. Si el order book de alguno de los dos exchanges tiene datos stale, el score resultante se multiplica por **0.70** (penalización del 30%) — la oportunidad sigue siendo procesable si su profit neto lo justifica, pero queda deprioritizada frente a oportunidades con datos frescos.
+
+El `score` se persiste en la tabla `opportunities` y es visible en el dialog de detalle de cada oportunidad en la vista Transacciones.
+
+---
+
+## Solidez de lógica de negocio
+
+### Órdenes parciales (RF-05)
+
+Cuando la liquidez del order book o los balances de wallet no cubren el volumen completo, el `TradeSimulator` ejecuta una **orden parcial** en lugar de rechazar la operación:
+
+```
+executable_volume_btc = MIN(
+    max_volume_btc,          ← liquidez del order book (ask + bid)
+    financeable_by_usdt,     ← máximo BTC comprable con el saldo USDT del comprador
+    btc_balance_seller       ← BTC disponible en el exchange vendedor
+)
+```
+
+Si `executable_volume_btc ≤ 0` → la oportunidad se marca `REJECTED` sin tocar ningún balance.
+
+Si `executable_volume_btc < max_volume_btc` → los trades se marcan `PARTIAL`. Los fees y el slippage se **recalculan exactamente** sobre el volumen real ejecutado usando `FeeCalculator` (sin prorrateo lineal), garantizando que el P&L registrado refleje los costos reales de la operación parcial.
+
+**Invariante de seguridad:** antes de ejecutar cualquier débito, el simulador valida que `buy_cost_usdt ≤ usdt_balance` y `executable_volume ≤ btc_balance_sell`. Si alguna condición falla (situación de race condition teórica), la operación se rechaza y los balances quedan intactos.
+
+### Circuit breaker y resiliencia de feeds
+
+El `BaseExchangeAdapter` implementa dos mecanismos de resiliencia:
+
+**1. Circuit breaker por staleness (30s)**
+
+Cada adaptador trackea `_last_update` con el timestamp del último tick recibido. La propiedad `feed_staleness_ms` expone cuántos milisegundos han pasado desde ese tick. Si transcurren **30 segundos sin dato**, `is_connected` pasa a `False`:
+
+- El dashboard muestra el dot del exchange en **rojo** con la latencia real.
+- El scoring aplica la **penalización del 30%** a cualquier oportunidad que use ese order book stale.
+- El `RedisOrderBookStore` tiene un TTL de 10 segundos — si el feed cae, el book expira de Redis y el engine no detecta oportunidades falsas con precios vencidos.
+
+**2. Backoff exponencial con reconexión automática**
+
+Ante cualquier error de conexión WebSocket:
+
+```
+Intento 1 → espera 1s
+Intento 2 → espera 2s
+Intento 3 → espera 4s
+...
+Intento N → espera min(2^N, 60s)
+```
+
+Al reconectar exitosamente, el backoff se resetea a 1s. `CancelledError` (hot-swap de Modo Demo o shutdown) interrumpe el loop limpiamente sin reintentar.
 
 ---
 
@@ -679,11 +757,11 @@ En producción, PostgreSQL (5432) y Redis (6379) solo son accesibles desde la re
 ### Esquema
 
 ```
-┌──────────────────┐     ┌──────────────────┐
+┌──────────────────┐     ┌───────────────────┐
 │   opportunities  │     │      trades       │
-│─────────────────│     │─────────────────│
-│ id (UUID PK)     │◄───1│ opportunity_id   │
-│ buy_exchange     │    N│ side (BUY/SELL)  │
+│───────────────── │     │───────────────────│
+│ id (UUID PK)     │◄───1│ opportunity_id    │
+│ buy_exchange     │    N│ side (BUY/SELL)   │
 │ sell_exchange    │     │ exchange          │
 │ buy_price        │     │ price             │
 │ sell_price       │     │ volume_btc        │
@@ -695,28 +773,28 @@ En producción, PostgreSQL (5432) y Redis (6379) solo son accesibles desde la re
 │ max_volume_btc   │     │ wallet_btc_after  │
 │ strategy         │     │ executed_at (TZ)  │
 │ score            │     │ status            │
-│ status           │     └──────────────────┘
+│ status           │     └───────────────────┘
 │ detected_at (TZ) │
 │ executed_at (TZ) │
-│ trading_fee_buy  │     ┌──────────────────┐
+│ trading_fee_buy  │     ┌───────────────────┐
 │ trading_fee_sell │     │      wallets      │
-│ withdrawal_fee   │     │─────────────────│
+│ withdrawal_fee   │     │─────────────────  │
 │ network_latency  │     │ exchange + currency (PK compuesta)
 └──────────────────┘     │ balance (NUMERIC) │
                          │ updated_at (TZ)   │
-┌──────────────────┐     └──────────────────┘
+┌──────────────────┐     └───────────────────┘
 │  system_config   │
-│─────────────────│     ┌──────────────────┐
+│──────────────────│     ┌──────────────────┐
 │ key (PK)         │     │  exchange_fees   │
-│ value            │     │─────────────────│
+│ value            │     │──────────────────│
 │ updated_at (TZ)  │     │ exchange (PK)    │
 └──────────────────┘     │ fee_buy          │
                          │ fee_sell         │
 ┌──────────────────┐     └──────────────────┘
 │   admin_users    │
-│─────────────────│     ┌──────────────────┐
+│──────────────────│     ┌──────────────────┐
 │ id (UUID PK)     │     │ exchange_config  │
-│ email (unique)   │     │─────────────────│
+│ email (unique)   │     │──────────────────│
 │ password_hash    │     │ exchange_id (PK) │
 │ created_at (TZ)  │     │ display_name     │
 └──────────────────┘     │ is_active        │
@@ -753,29 +831,42 @@ Las migraciones se ejecutan automáticamente en el startup de producción (`entr
 ### Pipeline: 3 stages en GitHub Actions
 
 ```
-push a main
-     │
-     ▼
-┌──────────┐     ┌──────────┐     ┌─────────────────────┐
-│   test   │────▶│  build   │────▶│       deploy        │
-│          │     │          │     │  webhook → VPS pull │
-└──────────┘     └──────────┘     └─────────────────────┘
+push a main ───────────────────────────────────────┐
+                                                   ▼
+                                          ┌──────────┐     ┌──────────┐
+                                          │   test   │────▶│  build   │
+                                          │          │     │          │
+                                          └──────────┘     └──────────┘
+
+release published ─────────────────────────────────┐
+                                                   ▼
+                                          ┌──────────┐     ┌──────────┐     ┌─────────────────────┐
+                                          │   test   │────▶│  build   │────▶│       deploy        │
+                                          │          │     │  + tag   │     │  webhook → VPS pull │
+                                          └──────────┘     └──────────┘     └─────────────────────┘
 ```
+
+El **deploy solo se dispara al publicar un release** desde la UI de GitHub — un push directo a `main` ejecuta test + build pero no despliega. Esto permite validar que las imágenes construyen correctamente antes de decidir qué commit promover a producción.
 
 ### Stage: test
 
 | Job | Herramienta | Bloquea si falla |
 |-----|-------------|-----------------|
-| lint-backend | Ruff (E, F, I, N, UP, B, SIM) | Sí |
+| lint-backend | Ruff (E, F, I, N, UP, B, SIM, TCH) | Sí |
 | sast-bandit | Bandit (-ll: medium+) | Sí |
-| lint-frontend | ESLint + Vue plugin | Sí |
+| lint-frontend | ESLint + eslint-plugin-vue + @vue/eslint-config-typescript | No (`continue-on-error: true`) |
+
+El stage `build` tiene `needs: [lint-backend, sast-bandit]` — el linter de frontend no bloquea la construcción de imágenes. Se ejecuta para visibilidad, pero un fallo no detiene el pipeline.
 
 **Bandit SAST** detecta: hardcoded secrets, uso de `eval`, shell injection, crypto débil, SQL injection patterns. El reporte JSON se publica como artefacto de cada run.
 
 ### Stage: build
 
 - Construye imágenes `prod` (multi-stage, target explícito) de backend y frontend.
-- Publica en **GitHub Container Registry** (`ghcr.io`) con dos tags: SHA completo del commit (inmutable para rollback) y `latest` (puntero móvil).
+- Publica en **GitHub Container Registry** (`ghcr.io`) con los siguientes tags:
+  - `<sha>` — SHA completo del commit (inmutable, permite rollback exacto)
+  - `latest` — puntero móvil al build más reciente
+  - `<tag_name>` — solo en releases (ej. `v1.2.0`), crea una versión semántica permanente
 - Usa layer cache del registry para acelerar builds cuando las dependencias no cambian.
 
 ### Stage: deploy
@@ -799,9 +890,16 @@ La seguridad se integró en cada fase del desarrollo:
 
 ### Servidor
 
-**VPS Interserver** — Linux (Ubuntu LTS) en datacenter en Estados Unidos.
+**VPS Interserver** — datacenter en Dallas, Texas.
 
-**¿Por qué mostrar esta información?** Es neutral-positivo para el jurado: demuestra que el sistema está realmente desplegado y operativo, no solo ejecutándose en localhost. La ubicación del servidor en EE.UU. es relevante porque los principales exchanges (Binance US, Coinbase, Kraken) tienen infraestructura concentrada allí — latencias de 20-80ms vs los 150-200ms que tendría desde América Latina.
+| Componente | Especificación |
+|------------|----------------|
+| **OS** | Debian GNU/Linux 13 "trixie" (13.5) |
+| **Kernel** | 6.12.73+deb13-amd64 |
+| **Shell** | Bash 5.2.37 |
+| **CPU** | Intel Xeon Platinum 8173M @ 2.00 GHz — 1 vCPU |
+| **RAM** | 1.9 GB (+ 953 MB swap) |
+| **Disco** | 40 GB (38 GB usables, 6.6 GB ocupados) |
 
 ### Stack de producción
 
@@ -816,9 +914,9 @@ Nginx (host) ─── Certbot (Let's Encrypt, auto-renovación)
 ┌──────────────────────────────────────────┐
 │             Docker Network               │
 │                                          │
-│  frontend:80  ←──── proxy_pass ─────────┤
-│  backend:8000 ←──── proxy_pass /api/    │
-│               ←──── proxy_pass /events  │
+│  frontend:80  ←──── proxy_pass ───────── ┤
+│  backend:8000 ←──── proxy_pass /api/     │
+│               ←──── proxy_pass /events   │
 │                                          │
 │  db:5432   (solo red interna)            │
 │  cache:6379 (solo red interna)           │
